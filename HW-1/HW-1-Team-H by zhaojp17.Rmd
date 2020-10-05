@@ -1,0 +1,381 @@
+---
+title: "《国际关系定量分析基础》2020秋季"
+subtitle: "第一次小组作业(共计100分)"
+date: "截止时间：**2020年10月12日 11：59 am**"
+author:
+  - 赵佳鹏
+documentclass: ctexart
+output:
+  #bookdown::html_document2:
+  bookdown::pdf_document2:
+    toc: false
+    number_sections: no
+    latex_engine: xelatex
+fontsize: 11pt
+geometry: margin=1in
+editor_options: 
+  chunk_output_type: inline
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+library(formatR)
+library(dplyr)
+library(ggplot2)
+library(scales)
+library(ggthemes)
+knitr::opts_chunk$set(
+	fig.align = "center",
+	message = FALSE,
+	warning = FALSE,
+	tidy = FALSE,
+	tidy.opts = list(arrow = TRUE, indent = 2)
+)
+ 
+load(url("https://cc458.github.io/files/terrorism.RData"))
+load(url("https://cc458.github.io/files/conflict.RData"))
+```
+
+
+**东南亚地区(如图 \@ref(fig:map))是国际关系和比较政治学界关注的重点地区，本次作业将利用公开数据，对东南亚地区国家的政治、经济、社会、外交等关系进行描述。** 
+
+
+```{r map, echo=FALSE, fig.height=3, fig.cap="东南亚地图"}
+ggplot() + 
+  geom_polygon(data = region_map_shp, 
+               aes(x = long, y = lat, group = group), size = 0.25) +
+  coord_fixed() 
+```
+
+
+**注意事项：**
+
+* 小组作业截止时间：2020年10月12日 11：59 am
+* 请直接在R Markdown文件中完成本次作业
+* 作业在网络学堂提交，每个小组仅需提交一份
+* 提交作业的文件名需以`HW-1-Team-X.Rmd`和`HW-1-Team-X.pdf`(或者`HW-1-Team-X.html`),请将`X`替换为小组编号，如`HW-1-Team-A.Rmd`和`HW-1-Team-A.pdf`。(若R Markdown出现无法`knit`为`pdf`情况，可以使用`bookdown::html_document2:`，则会生成为`html`)
+* 请显示每道题的R Code于pdf中，注重Code的整洁性和可读性，可参考[Google's R Style Guide](https://google.github.io/styleguide/Rguide.html)
+* 本次作业所需的数据和R Packages已经提供。本次作业需要的数据可以通过以下命令获取(或直接`load("terrorism.RData")`):
+
+```{r data, eval=FALSE}
+load(url("https://cc458.github.io/files/terrorism.RData"))
+load(url("https://cc458.github.io/files/conflict.RData"))
+```
+
+其中，
+
+* `terrorism.RData`包括三个数据集: `region_map_shp`, `gtd_region`, `wdi`;
+* `conflict.RData`包括四个数据集 `polity`, `acled_cnty`, `ideal_point_wide`, `ucdp_cnty`
+
+
+# R 基础问题（共15分）
+
+1.(**10分**) 请用`knitr::kable`创建一个8*3的表格，总结这7个数据框。表格除第一行为header外，其余每一行表示一个数据框；除第一列为数据框的名称外，其余两列分别为每一个数据框的变量(variables)和观测量（observations）数。（提示：可以先创建一个包含这些信息的新数据框，然后再使用`kable`创建表格；也可以利用R Markdown 手动创建）。
+
+```{r q1, eval=TRUE}
+library(knitr)
+
+# 获取数据维度
+num <- array(dim = c(7,2))
+num[1,] <- dim(region_map_shp)
+num[2,] <- dim(gtd_region)
+num[3,] <- dim(wdi)
+num[4,] <- dim(polity)
+num[5,] <- dim(acled_cnty)
+num[6,] <- dim(ideal_point_wide)
+num[7,] <- dim(ucdp_cnty)
+
+# 创建一个数据新的数据集
+df <- data.frame(dataset = c("region_map_shp","gtd_region","wdi",
+                          "polity","acled_cnty","ideal_point_wide",
+                          "ucdp_cnty"),
+                 variable_num = c(num[,1]),
+                 observations_num = c(num[,2]))
+
+#利用kable产生一个新的表格
+kable(df, caption = "数据集信息")
+```
+
+
+2.(**5分**)`stargazer`是政治学常用的产生统计表格的软件包，请利用`stargazer`提供一个关于`wdi`数据的描述性统计表格。
+
+
+```{r q2, results='asis',eval=TRUE}
+# 加载软件包
+library(stargazer)
+
+#使用stargazer命令产生新的描述性表格
+stargazer(wdi, header=FALSE, type='latex', title = "描述性统计结果",
+                     digit.separator = "")
+
+```
+
+
+
+
+# 数据可视化问题（共85分）
+
+3.(**10分**) 数据`region_map_shp`是一个包含空间信息的数据集，其中变量`terratck`包含了东南亚1991-2006年之间所遭遇的恐怖主义袭击数量总和。同时数据集`gtd_region`记录了东南亚1991-2006年每一次恐怖袭击的经纬度地理位置（变量`longitude`和`latitude`)。请利用`ggplot2`这一软件包产生如下地图(图 \@ref(fig:q3))，描述各国在此期间的恐怖主义数量分布以及被袭击的地点，并简要描述你对关于东南亚恐怖袭击活动地理分布的观察。
+
+```{r q3,eval=TRUE,fig.height=3, fig.cap='东南亚恐怖袭击数量分布'}
+ggplot() + 
+# 设置各国地图形状
+  geom_polygon(data = region_map_shp, 
+               aes(x = long, 
+                   y = lat, 
+                   group = group,
+                   fill = factor(terratck)), 
+               size = 0.25) +
+  coord_fixed() +
+# 设置各国地图颜色填充规则
+  scale_fill_manual(values = c("#009E73", "#F0E442", "#0072B2","#D55E00", "#CC79A7"),
+                    name = "Total number of attacks",
+                    na.value = "gray",
+                    labels = c("1 - 10","10 - 100","100 - 500","500 - 1000",
+                               ">2000", "NA")) +
+# 将各次袭击地点加至地图上并设置颜色填充规则
+  geom_point(aes(x = gtd_region$longitude, 
+                 y = gtd_region$latitude, 
+                 color = "black"),
+             alpha=.5, size = 0.5, na.rm= FALSE) + 
+  scale_color_manual(name = "",
+                     labels = c("Attack locations"),
+                     values = "black")  +
+# 增加横纵坐标
+  labs(y = "latitude", x = "longitude")
+
+```
+
+我们观察发现，东南亚地区恐怖袭击活动地理分布不均。具体而言，呈现出以下几个主要的特点：
+
+* 菲律宾发生恐怖袭击活动数量最多的国家；
+* 文莱、新加坡、东帝汶、越南发生恐怖袭击活动的数量较少；
+* 在缅甸、泰国、柬埔寨等国，恐怖袭击活动地理分布较其它国家均匀；
+* 在马来西亚，恐怖袭击活动大部分集中于西马来西亚北部；而在印度尼西亚，恐怖袭击活动大部分集中于苏门答腊岛西北部、爪哇岛一带、苏拉威西岛中部与塞兰岛一带。
+
+
+4.(**10分**) 数据集`wdi`中的变量`gdpgrowth`记录了东南亚各国在1990-2018年之间的国民生产总值增长率。请利用`ggplot2`绘制各国在此时间段内的国民生产总值增长率随时间而变化的折线图（图 \@ref(fig:q4)）。并据此图简要谈谈1997-1998年亚洲金融危机对东南亚国家经济增长的冲击（提示：可以使用`facet_wrap`分别绘制,也可以绘制到同一张图）
+
+```{r q4,eval=TRUE,fig.height=5, fig.cap='东南亚各国国民生产总值增长率变化（1990-2018）'}
+# 初始化作图数据集与横纵坐标变量
+ggplot(wdi,aes(x = year,y = gdpgrowth)) +
+  geom_point(colour = "pink", size = 2) +
+  geom_line(colour = "black") +
+  labs(x = "Year", y = "GDP per capita growth (annual %)",
+       caption ="Source: World Bank Group 2020") +
+  scale_x_continuous(breaks = seq(1990, 2018, 10)) + 
+# 分别绘制各国折线图并排列齐整，设定纵坐标不统一
+  facet_wrap(vars(country),
+             nrow = 4,
+             ncol = 3,
+             scales = "free") + 
+  theme(strip.text.x = element_text(size = 10, color='white',angle=0),
+        strip.background = element_rect(fill = "#525252", color='#525252'))
+```
+
+我们观察发现，1997-1998年亚洲金融危机对东南亚国家经济增长的冲击是不一的。具体而言，呈现出以下几个主要的特点。
+
+* 柬埔寨、缅甸两国的GDP增长率在危机前后没有明显变化，说明危机对这两个国家的经济增长基本没有影响。
+* 文莱、印尼、老挝、马来西亚、菲律宾、新加坡、泰国、越南等国的GDP增长率在危机到来后出现了不同程度的下降：
+  * 印尼、马来西亚、新加坡等国的经济增速跌幅均超过10%；
+  * 文莱、菲律宾、老挝、越南等国的经济增速跌幅较小，且后两者在危机中仍然维持了经济正增长；
+  * 危机对上述各国经济增速的负面影响维持了1到2年左右不等。
+* 东帝汶于2002年正式独立，因而无法对其经济增长在危机中的表现做出描述。
+
+5.(**10分**) 数据集`wdi`中`gdppc`表示人均国民生产总值(GDP per capita，以2018年美元为单位)，变量`milexp`表示军费开支占国民生产总值的比值。请利用`ggplot2`描述`gdppc`与`milexp`之间的关系，并讨论你是否发现什么规律。
+
+```{r q5,eval=TRUE, fig.height=5, fig.cap='人均GDP与军费开支占GDP比值的关系（东南亚地区）'}
+# 初始化作图数据集与横纵坐标变量
+ggplot(wdi, aes(x = gdppc,y = milexp)) +
+    geom_point() +
+    geom_smooth() +
+    geom_smooth(method = "lm") +
+    labs(x = "GDP per capita", 
+         y = "Ratio of military expenditure to GDP (%)", 
+         caption = "Source: World Bank Group 2020") 
+```
+
+```{r q52,eval=TRUE, fig.height=7, fig.cap='人均GDP与军费开支占GDP比值的关系（东南亚各国）'}
+# 初始化作图数据集与横纵坐标变量
+ggplot(wdi, aes(x = gdppc,y = milexp)) +
+    geom_point() +
+    geom_smooth(aes(color = factor(country))) +
+    labs(x = "GDP per capita", 
+         y = "Ratio of military expenditure to GDP (%)", 
+         caption = "Source: World Bank Group 2020") +
+# 分别绘制各国折线图并排列齐整，设定横纵坐标不统一
+    facet_wrap(vars(country),
+         nrow = 4,
+         ncol = 3,
+         scales = "free") +
+    theme(legend.position = "none")
+```
+
+我们观察发现，`gdppc`与`milexp`之间存在如下关系和规律。
+
+* 对于大部分国家而言，`gdppc`与`milexp`呈负相关关系，即军费开支占GDP的比值随着人均GDP的增长而降低。
+* 但若将东南亚国家作为一个整体看待，随着人均GDP的增加，军费开支占GDP的比值呈现先降低，后升高，再降低的趋势。整体上看，二者呈正相关关系。
+  * 当人均GDP低于7500美元左右时，二者大体呈负相关关系；
+  * 当人均GDP高于22500美元左右时，二者亦大体呈负相关关系；
+  * 当人均GDP高于7500美元左右但低于22500美元左右时，二者大体呈正相关关系。这一部分的正相关关系对整体正相关关系贡献很大。结合图 \@ref(fig:q5) 所示，这可能暗示着12500美元左右的人均GDP是区分拥有不同`gdppc`与`milexp`水平国家的界限。
+  
+
+
+6.(**10分**) 数据集`wdi`中`fdi`表示当年外国直接投资（净流入）占国民生产总值的比例。请`ggplot2`及其`facet_wrap`命令，描述东南亚各国在1990-2018年之间外国直接投资的变化情况，并据此简要讨论你观察到何种模式和规律。(提示：参考第4题)
+
+```{r q6, eval=TRUE, fig.height=7, fig.cap='东南亚各国FDI（净流入）占GDP比例的变化（1990-2018）'}
+# 初始化作图数据集与横纵坐标变量
+ggplot(wdi,aes(x = year,y = fdi)) +
+  geom_point(colour = "pink", size = 2) +
+  geom_line(colour = "black") +
+  labs(x = "Year", y = "Ratio of FDI (net inflow) to GDP (%)",
+       caption ="Source: World Bank Group 2020") +
+  scale_x_continuous(breaks = seq(1990, 2018, 10)) + 
+# 分别绘制各国折线图并排列齐整，设定横纵坐标不统一
+  facet_wrap(vars(country),
+             nrow = 4,
+             ncol = 3,
+             scales = "free") + 
+  theme(strip.text.x = element_text(size = 10, color='white',angle=0),
+        strip.background = element_rect(fill = "#525252", color='#525252'))
+```
+
+我们观察发现，东南亚各国FDI的变化模式不一。我们将各国大致分为如下几类。
+
+* 高水平增长：新加坡
+  * 新加坡FDI占GDP比例多年维持在10%以上，且在图示时间段内整体呈现增长趋势。
+* 出现尖峰后走低并稳定：文莱、马来西亚、泰国
+  * 这三国在图示时间段内均出现了一个高峰值，且在高峰值出现后FDI占GDP比例大致呈现走低的趋势并趋于稳定。
+* 出现多个尖峰：柬埔寨、老挝、菲律宾、越南
+  * 这四国在图示时间段内均出现了多个高峰值，但高峰值之后FDI占GDP比例的变化趋势不一。
+* 出现低于0的负值：印度尼西亚
+  * 1998-2001年，印度尼西亚的FDI占GDP比例出现了连续负值，说明FDI产生了净流出。这可能是由1997-1998年亚洲金融危机所导致的。
+* 东帝汶与缅甸的观测数据较其他国家少，因而暂时难以描述它们FDI的变化模式。不过图上可见，这两国在图示时间段内均出现了一个高峰值。
+
+
+7.(**10分**) 请利用可视化方法，简要描述并讨论数据集`wdi`中`fdi`, `gdppc`, `gdpgrowth`和`milexp`这四个变量的相关关系。
+
+```{r q7, eval=TRUE, fig.height=4, fig.width=4, fig.cap='数据集wdi中fdi, gdppc, gdpgrowth和milexp四个变量的相关关系图'}
+library(GGally)
+# 选定需要进行相关性分析的变量并作图
+ggcorr(wdi[, c("fdi", "gdppc", "gdpgrowth", "milexp")], 
+  palette = "RdBu", label = TRUE, name = "correlation", label_round = 3)
+# 相关系数小数位数可调整
+```
+
+我们观察发现，`fdi`, `gdppc`, `gdpgrowth`和`milexp`这四个变量的相关关系如下。
+
+* `gdpgrowth`和`gdppc`，`gdpgrowth`和`milexp`两对变量呈负相关关系，相关系数分别为-0.193与-0.154。
+  * 一般而言，当一国人均国民生产总值增长时，该国GDP亦增长；随着经济体量的增大，国民生产总值增速可能会放缓。
+  * 一般而言，军费开支占国民生产总值的比值越低，可供投入经济循环的资金就越多，国民生产总值增速越高。
+* 剩余的各对变量均呈正相关关系。`fdi`与`gdppc`, `gdpgrowth`, `milexp`之间的相关系数分别为0.590, 0.109与0.366。而`gdppc`和`milexp`之间的相关系数为0.356。
+  * FDI一般能够拉动经济增长。
+  * `gdppc`和`milexp`呈正相关关系已由图 \@ref(fig:q5) 说明。
+
+
+8.(**10分**) 数据集`polity`是国际关系中最常见的用来测量国家整体类型的数据。其中的变量`polity2`的值域为[-10, +10]，即“最不民主”(-10)到“最民主”(+10)。请利用`ggplot`简要描述这一变量的分布情况。
+
+```{r q8, eval=TRUE, fig.cap='民主指数polity2的变量分布图'}
+# 可以使用facet_wrap函数分国家进行展示
+# 但这可能导致规律与模式不够明显
+# 我们选用条形图对东南亚地区的民主指数进行展示
+ggplot(polity, mapping = aes(x = factor(polity2))) +
+  geom_bar() +
+  scale_x_discrete() +
+  ylab("Count") +
+  xlab("Polity2 Index")
+```
+
+9.(**10分**) 数据集`acled_cnty`记录了2010-2019年东南亚国家经历的“抗议”（protest）和“骚乱”（riots）数量。利用`ggplot2`绘制各国经历的抗议和骚乱变化情况，并比较抗议和骚乱在各国内部的差异情况。（提示：利用`ggplot`中的`linetype`和`facet_wrap`命令）
+
+
+```{r q9, eval=TRUE, fig.height=5,  fig.cap='东南亚各国国内抗议与骚乱数量（2010-2019）'}
+# 本段代码定义了interger_break函数
+# 目的是使老挝一图的纵坐标不出现非整数刻度
+library("scales")
+integer_breaks <- function(n = 5, ...) {
+  breaker <- pretty_breaks(n, ...)
+  function(x) {
+     breaks <- breaker(x)
+     breaks[breaks == floor(breaks)]
+  }
+}
+# 初始化作图数据集、横纵坐标变量与线条类型
+ggplot(acled_cnty, 
+       aes(x = year, 
+           y = events, 
+           linetype = factor(event_type))) +
+  geom_point() +
+  geom_line()  +
+  labs(x = "Year", y = "Social unrest",
+       caption="Source: ACLED 2020") +
+  scale_x_continuous(breaks = seq(1991, 2019, 5)) +
+  scale_y_continuous(breaks = integer_breaks()) + 
+# 使用expand = c(0,1)，可使老挝一图纵坐标出现0、1、2、3，更为美观
+# 但这样会导致其它国家的图中有个别点溢出
+# 下面分别绘制各国折线图并排列齐整，设定纵坐标不统一
+  facet_wrap(vars(country),
+             nrow = 3,
+             ncol = 3,
+             scales = "free_y") + 
+  theme(strip.text.x = element_text(size = 12, color='white',angle=0),
+        legend.position = "bottom",
+        legend.title = element_blank(),
+        strip.background = element_rect(fill = "#525252", color='#525252')) 
+```
+
+我们观察发现，2010-2019年东南亚国家经历的抗议和骚乱数量呈现出以下几个主要的特点。
+
+* 各国内部抗议的数量均高于同年骚乱的数量；
+* 各年间抗议的数量可能会发生较大的波动，但骚乱的数量变化起伏不大；
+* 特别地，老挝国内经历的抗议和骚乱数量极低，远远小于图上所列的其它国家。
+
+
+10.(**5分**) 数据集 `ucdp_cnty`记录了东南亚国家1946-2019年之间经历的三种冲突（`type_of_conflict2`:国内冲突、国际冲突以及国际化的国内冲突）的数量(`conflict`)。请利用`ggplot`描述各国分别经历的这三类冲突分布情况。注意其中的缺失值（`NA`），并简要说明为何有缺失值。
+
+```{r q10, eval=TRUE, fig.cap='东南亚各国冲突数量（1946-2019）'}
+ggplot(ucdp_cnty, 
+       aes(x = countyname, 
+           y = conflict, 
+           fill = factor(type_of_conflict2))) + 
+  geom_bar(position="dodge", stat="identity") + 
+# 使横坐标各国名称不重叠
+  scale_x_discrete(labels = c("Brunei","Cambodia","Indonesia",
+        "Laos","Malaysia","Myanmar",
+        "Philippines","Thailand","NA")) +
+  scale_fill_manual(values=c("yellow", "red", "blue")) + 
+  labs(x = "", y = "Count", caption="Source: UCDP 2019") +
+  theme_bw() + 
+  theme(strip.text.x = element_text(size = 12, color='white',angle=0),
+        legend.position = "bottom",
+        legend.title = element_blank(),
+        strip.background = element_rect(fill = "#525252", color='#525252')) 
+
+```
+
+查阅UCDP提供的数据文档可以推测，缺失值存在的原因在于1946-2019年之间越南存在南北越分裂时期。这一阶段南北越之间的冲突被认为是“国际冲突”，但若将其标注为`Vietnam`而非`NA`则有失妥当。
+
+
+11.(**10分**) 数据集`ideal_point_wide`记录了东南亚国家在1973-2018年之间在联合国大会中投票是否同意中国、印度、美国和俄罗斯（苏联）的情况。利用`ggplot`分布绘制东南亚国家在此期间的立场变化。
+
+```{r q11, eval=TRUE,fig.height=7,  fig.cap='东南亚各国在联合国大会投票同意中印美俄的情况（1973-2018）'}
+ggplot(ideal_point_wide, 
+       aes(x = year, y = agreement), 
+       color = factor(type)) +
+  geom_line(aes(color = factor(type)))  +
+  labs(x = "Year", y = "UNGA voting agreement",
+       caption ="Source: Bailey, Strezhnev, and Voeten (2017, JCR)") +
+  scale_x_continuous(breaks = seq(1973, 2018, 10)) + 
+  scale_y_continuous(breaks = seq(0, 1, 0.5)) + 
+  facet_wrap(vars(countryname),
+             nrow = 4,
+             ncol = 3,
+             scales = "fixed") + 
+  theme(strip.text.x = element_text(size = 12, color='white',angle=0),
+        legend.position = "bottom",
+        legend.title = element_blank(),
+        strip.background = element_rect(fill = "#525252", color='#525252')) + 
+  scale_colour_manual(values = c("blue","green","gray", "red"))
+```
+
+
