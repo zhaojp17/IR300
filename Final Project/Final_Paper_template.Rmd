@@ -1,0 +1,267 @@
+---
+title: "非洲受援国自然资源贸易量<br>对中美ODA分配的影响探析"
+subtitle:  |
+  | “慷慨施援”还是“巧取资源”？
+  | 《国际关系定量分析基础》2020秋季期末论文
+date: "2020年12月31日"
+author:
+  - 陈道想
+  - 黄卓尔
+  - 潘明花
+  - 杨霖
+  - 赵佳鹏
+documentclass: ctexart
+header-includes:
+  - \usepackage{float}
+output:
+  #bookdown::word_document2:
+  bookdown::pdf_document2:
+    toc: false
+    number_sections: no
+    latex_engine: xelatex
+indent: true    
+bibliography: bibliography.bib   
+fontsize: 12pt
+spacing: onehalfspacing
+geometry: margin=1in
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+library(tidyr)
+library(formatR)
+library(dplyr)
+library(ggplot2)
+library(scales)
+library(ggthemes)
+library(countrycode)
+opts_chunk$set(tidy=FALSE, message = FALSE, warning = FALSE,fig.pos = "H", out.extra = "",
+               fig.align='center', tidy.opts=list(arrow=TRUE, indent=2))
+```
+
+\begin{center}
+{\bf 内容摘要}
+\end{center}
+
+辨清国家援助分配的动机对于理解各国对外援助政策的逻辑至关重要，而受援国自然资源所可能产生的影响一直受到研究者的关注。目前学界就自然资源对援助分配的研究多围绕中国展开，尚缺少对各国同时进行的横向比较。本文重点考察了不同类型的自然资源的贸易相对量对于援助国ODA分配的影响，对2000年至2013年间中美两国给予非洲各国的ODA援助量建立了……模型进行分析，发现……该结果说明，自然资源对中美两国ODA的分配存在……影响，暗示了这一影响可能是不同援助国均保有的共性规律。
+
+# 第1章：导论
+
+发展援助是国家之间经济互动的重要形式，而辨清国家援助分配的影响因素与动机对于理解各国对外援助政策的逻辑至关重要。自上世纪50年代开始，中国便施行了不同类型的对外援助项目。虽然中国并不是国际社会中的新兴援助者，但近年来随着中国实力的快速上升，中国的对外援助活动受到的关注也不断上升。部分声音认为，中国觊觎受援国的自然资源，因而倾向于将对外援助选在资源丰富的国家[@fuchs2019motives]。比如，Foreign Policy的前主编奈姆（Naím），曾在2007年于Foreign Policy上发文，认为中国开展援助的重要关注点之一是获取自然资源与原材料，并据此将中国的对外援助概括为rogue aid [@naim2007rogue]。但是，此结论仅仅基于选择性的案例得出，而只有更为全面的信息才能支撑更为可信的结论。令人遗憾的是，中国官方所提供的信息很有限，其透明度仍然有待提升[@dreher2017aid]。不过最近几年，得益于新的数据库的建立，利用统计数据针对中国援助所做的实证研究开始出现，弥补了基于个别例子得出结论的缺陷。Dreher等人刊文发现，几乎没有证据显示中国向具备更丰富的自然资源的国家提供了更多的援助，自然资源对于中国对外援助的影响微乎其微。其文章对rogue aid一词提出了批评，认为用其形容中国援助是不贴切、不公平的[@dreher2015rogue]。
+
+可以看出，针对“中国对外援助是否受到受援国自然资源影响”这一问题，研究结论并不一致。虽然这一现象使我们感到困惑，但另有一点引发了我们更深的好奇——就此问题而言，针对中国进行的研究很多，却少有研究将类似的评价或批判方法用于西方国家，并进行国家间的横向比较。换言之，各援助国对受援国的援助分配受到后者自然资源情况的影响几何？如果存在这样的影响，那么这一关系是在各个援助国之间普遍存在的、程度不同的共性规律，还是只在个别援助国存在的个性特征？这启示我们应当使用同一套模型或评价标准，来衡量评价各援助国的援助行为。
+
+本文认为，既往研究中对于受援国“自然资源”的量化表征方法存在一定不足。大部分研究只关注原油这一大宗贸易商品并将其作为表征量，缺乏对不同类型自然资源影响的细化研究。而在关注了不同类型自然资源影响的文献中，大部分都以自然资源的出口绝对量进行表征^[参见第2章。]——而我们认为，使用相对量能够表征援助国对受援国的自然资源依赖度，更好地反映两国关系。本文进而建立了如下假设：在其他条件一定的情况下，当援助国对受援国的自然资源依赖度增加时，援助国将给予受援国更多的援助。
+
+为了检验上述假设，本文利用公开数据库，以中美两国为援助国研究对象，对2000年至2013年间两国对非洲各国的ODA（政府开发援助，Official Development Assistance）援助量进行了分析。本文的回归分析对政治、外交等方面的变量进行了控制，并借助国家与年份固定效应（country and year fixed effects）来控制未被纳入研究考虑的变量可能带来的偏差。本文同时进行了……检验
+
+预览研究发现
+
+总结研究意义：
+
+本文发现，中美两国……本文将中美两国纳入同一评价框架进行分析比较，填补了针对西方国家开展类似研究的空白。这一结果有助于我们理解各国不同援助方式之中存在的共性与个性。
+
+本文的后续安排如下：第2章理论与假设将就既有研究中关于“自然资源是否影响援助分配”的争论进行讨论，进一步指出其存在的不足并提出研究假设；第3章研究设计将界定部分概念的范围，介绍本研究的数据来源与应用的模型统计方法；第4章统计结果与讨论将报告统计分析的结果，并结合假设讨论研究的发现；第5章结论将总结本文，并进一步阐释本研究的启示与意义。
+
+# 第2章：理论和假设
+
+探讨各援助国对受援国的援助分配受后者自然资源影响的程度是否不同，需要首先概述自然资源是否影响、如何影响援助国的援助分配，再使用同一的评价框架对各援助国进行横向比较。不过，既往文献对于自然资源是否会影响援助国的援助分配并没有得出一致的结论。即使仅仅以针对中国开展的实证研究为例，其得出的结论也有些许出入，并不完全一致。如前所述，Dreher等人刊文发现，几乎没有证据显示中国向具备更丰富的自然资源的国家提供了更多的援助，自然资源对于中国对外援助的影响微乎其微[@dreher2015rogue]。而庞珣等人则发现，“在其他条件不变的情况下，中国对能源丰富的国家和对华贸易活跃的国家给予了更多援助”[@Pang2017]。我们推测，之所以它们得出的结论各异，是因为各个研究者选择了不同的量化方法。在我们所举的两个例子中，前者使用了受援国产油量、产气量、产钻量等各类指标，而后者则使用受援国是否为能源出口重要国进行表征。
+
+可以发现，上述文献的表征量化方法各有优劣。我们认为，使用产量表征受援国的自然资源不及使用出口量更为合适，因为受援国的自然资源禀赋要想影响到其与援助国之间的关系，必须通过出口自然资源的方式实现——出口其他国家与在受援国国内消耗的自然资源，在空间上与援助国之间没有联系。在此基础上我们认为，使用出口总量表征受援国的自然资源不及使用出口各类资源量更为合适。既往研究多使用自然资源的出口总量或类似总体指标，或考虑到石油在各国能源需求中占有的重要地位而只使用原油出口量进行表征[@guillon2020can; @fuchs2013needy; @dreher2018apples; @Pang2017]。然而显然，各个国家对于石油、矿产、农业原产品等不同类别自然资源的需求是不同的。将各类资源纳入考虑有利于我们针对它们造成影响的区别进行细化研究。
+
+同时我们还注意到，上述文献多使用出口绝对值表征受援国的自然资源，少有使用出口相对值的。相对值的概念定义如下：
+
+\begin{equation}\label{eq1}
+\text{相对量}=\frac{\text{受援国向援助国出口自然资源的绝对量}}{\text{援助国从世界进口该类资源的总量}}
+\end{equation}
+
+我们认为，相对值所反映的是援助国对受援国自然资源出口的依赖程度，而将其用于表征可能比使用绝对值更为合适。如果援助国对受援国的依赖程度提高，就越需要保证其获取自然资源的稳定性、安全性，因而可能会倾向于给予受援国更多的援助。据此，我们特提出第一个假设。
+
+$H_1$（相对值假设）：如果援助国对受援国自然资源的依赖度上升，则会倾向于向该受援国提供更多援助。
+
+值得注意的是，有新的研究认为，还有一种可能导致了各研究之间存在的差异——除却自变量的量化方法不同，不同文献所研究的因变量也不完全一致[@dreher2018apples; @fuchs2019motives]。对外援助包括ODA、OOF（其它官方资金，Other Official Flow）等多种类型；其中，ODA的赠与水平在25%以上，而OOF赠与水平较低。不同类型的对外援助可能出于不同的动机，遵循不同的逻辑。以中国为例，其ODA分配的主要考虑点是政治外交，而其OOF分配关注的主要考虑点则是包括自然资源在内的经济利益，更关注市场运作[@dreher2018apples]。虽然大量既往文献认为，援助国对于受援国自然资源的需要是国际援助的经济动机之一；但它们所举的例子多是注重商业利益的贷款。比如，西方某些国家的银行经常以自然资源商品作为贷款发放与援助项目执行的保障，而日本在上世纪80年代对中国的某些商业贷款也曾以自然资源商品作为交换回报[@fuchs2019motives]。因此我们认为，如果只考虑定义较为严格、赠与性质更强、商业化气息较淡的ODA项目，那么它更容易受到政治因素而非自然资源贸易等经济因素的影响。这一逻辑对于各个援助国都有可能成立。据此，我们特提出第二个假设。
+
+$H_2$（绝对值假设）：在特定置信水平下，受援国向援助国出口的自然资源绝对量与其得到的ODA援助量之间没有明显关系。
+
+受限于时间，本文控制了研究规模，将ODA定为研究的因变量。考虑到中国官方所提供的援助项目信息有限，研究定义严格而明确的ODA（而非对外援助总量）更有利于我们以同一套明确的标准横向比较中国与其它国家的援助分配之间可能存在的共性。
+
+上述两个假设看似是冲突的，但实际上可以并存，因为绝对量与相对量之间的关系并不固定。回顾相对值的定义（参见公式 \@ref(eq1)）可知，如果分子（绝对量）的增长速度小于分母的增长速度，即使绝对值在增大，但相对值仍可以变小。另外，虽然上文提及的既有文献指出ODA可能更关注政治外交因素，在表面上与进出口贸易活动无涉；但出口相对值所反映的不是单纯的经济利益关系，而是贸易依赖关系。如前所述，这种依赖关系可能形成一对潜在的权力关系，暗含了援助国对于资源安全的关切，而其重要性可能远高于单纯的经济利益考量。
+
+
+# 第3章：研究设计
+
+我们在建立上述假设的过程中，没有涉及对各不同援助国个性的讨论，因而我们预计上述假设将在各援助国间具备共性。本文以中美两国为援助国中的代表国，就两国在2000年至2013年间对非洲各国的ODA援助量建立了面板数据进行了固定效应模型分析。本研究的观测单元（unit of observation）是受援国·年（recipient-year）。
+
+## 数据与变量
+
+### 因变量——援助国给予受援国ODA的量
+
+如第2章所述，本文将中美两国给予受援国ODA的量定为研究的因变量（`CN_aid`与`US_aid`）。由于透明度问题，有关中国援助的数据难以依赖中国官方公布的信息。目前学界常利用美国威廉与玛丽学院（College of William & Mary）所建立的AidData Chinese Official Finance Dataset（下称COF数据库）中的数据开展针对中国对外援助的研究[@dreher2017aid]。Dreher等人利用该数据库，于2018年在《国际研究季刊》（International Studies Quarterly）上发表了一篇论文[@dreher2018apples]。其复制数据中包含了中国对非洲各国ODA援助的量。出于方便起见，本文选用了其复制数据作为表征中国（`CN_aid`）的数据来源。为了使统计标准尽可能一致，我们同样选用AidData发布的Research Release中的数据，并以之作为表征美国（`US_aid`）的数据来源[@tierney2011more]。由于搜集中国援助的相关信息难度较大，COF数据库因而只包含了2000年至2013年间中国对外援助的数据，我们也因此将研究的时间范围定在2000年至2013年。
+
+根据上述数据，可以作出2000年至2013年间中美两国对非洲各国ODA援助量的地理分布图（参见图 \@ref(fig:ODAmap1)、 \@ref(fig:ODAmap2)）。由图可见，中美两国对非洲各国ODA援助量的地理分布并不均匀，大致呈现东多西少的现象；同时可见，美国对非ODA援助总量要显著高于中国。
+```{r ODAmap1, fig.height=3, fig.cap='中国对非各国ODA援助量分布图', echo=FALSE, results='asis', message=FALSE, warning=FALSE}
+# 中美两国对非各国ODA援助量分布图
+load("Panel.RData")
+temp <- unique(CN_panel$ccode)
+library(stringr)
+temp2 <- data.frame(region = countrycode(temp, "cown", "country.name")) %>%   mutate(region = recode(str_trim(region), 
+                         "Côte d’Ivoire" = "Ivory Coast",
+                         "São Tomé & Príncipe" = "Sao Tome and Principe",
+                         "Eswatini" = "Swaziland",
+                         "Congo - Kinshasa" = "Democratic Republic of the Congo",
+                         "Congo - Brazzaville" = "Republic of Congo"))
+# 建立地图集数据
+map_temp <- map_data("world", region = temp2$region)
+# 计算2000年至2013年总量
+map_CN_aid <- CN_panel %>% 
+  select(year, ccode, CN_aid) %>% 
+  group_by(ccode) %>% 
+  summarise(CN_SUM = sum(CN_aid, na.rm = TRUE))
+map_US_aid <- US_panel %>% 
+  select(year, ccode, US_aid) %>% 
+  group_by(ccode) %>% 
+  summarise(US_SUM = sum(US_aid, na.rm = TRUE))
+# 将援助数据添加进地图集中
+map_temp <- map_temp %>% 
+  mutate(ccode = countrycode(region, "country.name", "cown")) %>% 
+  full_join(., map_CN_aid, by = c("ccode" = "ccode")) %>%  # 注意join类型
+  full_join(., map_US_aid, by = c("ccode" = "ccode"))  # 注意join类型
+# 绘图
+ggplot(map_temp) + 
+  geom_polygon(aes(x = long, y = lat,
+                   group = group, fill = CN_SUM),
+               color = "black", size = 0.25) + 
+  coord_fixed() + 
+  ggtitle("China's total aid from 2000 to 2013") +   
+  labs(y = "latitude", x = "longitude") +
+  scale_fill_distiller(name = "China's aid", palette = 1, 
+                       direction = 1, space = "Lab",
+                       na.value = "grey50", guide = "colourbar", 
+                       aesthetics = "fill", breaks = pretty_breaks(n = 6))
+ggsave("CN_ODA.png", plot = last_plot(), scale = 1)
+```
+
+```{r ODAmap2, fig.height=3, fig.cap='美国对非各国ODA援助量分布图', echo=FALSE, results='asis', message=FALSE, warning=FALSE}
+ggplot(map_temp) + 
+  geom_polygon(aes(x = long, y = lat,
+                   group = group, fill = US_SUM),
+               color = "black", size = 0.25) + 
+  coord_fixed() + 
+  ggtitle("USA's total aid from 2000 to 2013") +
+  labs(y = "latitude", x = "longitude") +
+  scale_fill_distiller(name = "USA's aid", palette = 1, 
+                       direction = 1, space = "Lab",
+                       na.value = "grey50", guide = "colourbar", 
+                       aesthetics = "fill", breaks = pretty_breaks(n = 6))
+ggsave("US_ODA.png", plot = last_plot(), scale = 1)
+rm(map_temp, map_US_aid, map_CN_aid, temp, temp2)
+```
+
+
+### 自变量——援助国就自然资源的进口量
+
+为了检验我们在第2章提出的绝对值假设，我们首先需要收集中美两国从各非洲国家进口的自然资源量。世界银行（World Bank）的统计数据将双边贸易中的商品分为多个类别^[本文所用的世界银行数据，如无特殊注明，均来自以下两处：UN Comtrade via WITS （http://wits.worldbank.org）与World Bank Data （http://data.worldbank.org/indicator）。下同。]。为了更为精细地探究不同类别的自然资源可能造成的影响，本文选取了其中的金属矿产`Ores and Metals`、农业原材料`Agricultural Raw Materials`和能源燃料`Fuels`三个类别进行分析。
+
+根据上述数据，可以作出2000年至2013年间中美两国从非洲各国进口三类自然资源的总量折线图（参见图 \@ref(fig:Importmap)）。由图可见，在大部分年份内，中国进口的农业原材料`Agricultural Raw Materials`量要大于美国，而美国进口的燃料`Fuels`量要大于中国。在2006年以前中美进口的金属`Ores and Metals`量相当，而在此之后中国进口量则远高于美国。
+
+同时，为了检验我们在第2章提出的相对值假设，我们还需要在上一步的基础上，收集中美两国从全世界进口的自然资源量，并根据公式 \@ref(eq1)进行运算，以得到用相对值表示的、中美两国就某一类自然资源对某一受援国的进口依赖度（以其英文缩写`dep`表示）。
+
+```{r Importmap, fig.height=3, fig.cap='中美两国进口非洲自然资源总量折线图', echo=FALSE, results='asis', message=FALSE, warning=FALSE}
+# 中美两国进口非洲自然资源总量折线图
+# 我们为了输入方便起见，将fuels等同于oil
+library(stringr)
+Import <- panel %>% 
+  group_by(year) %>% 
+  select(year, contains("import")) %>% 
+  summarise(US_oil = sum(US_oil_import, na.rm = TRUE),
+            CN_oil = sum(Cn_oil_import, na.rm = TRUE),
+            US_raw = sum(US_raw_import, na.rm = TRUE), 
+            CN_raw = sum(Cn_raw_import, na.rm = TRUE),
+            US_metals = sum(US_metals_import, na.rm = TRUE),
+            CN_metals = sum(Cn_metals_import, na.rm = TRUE)) %>% 
+  gather(., key = "type", value = "amount", `US_oil`:`CN_metals`) %>% 
+  mutate(Country = ifelse(str_detect(type, "US"), "US", "CN"),
+         Resource = ifelse(str_detect(type, "oil"), "Fuels", 
+                           ifelse(str_detect(type, "raw"), "Agri. Raw Materials", "Ores and Metals")))
+
+ggplot(Import, aes(x = year, y = amount), color = factor(Country)) +
+  geom_line(aes(color = factor(Country)))  +
+  geom_point(colour = "black", size = 1) +
+  labs(x = "Year", y = "Total Import Amount",
+       caption ="Source: World Bank") +
+  scale_x_continuous(breaks = seq(2000, 2013, 3)) + 
+  scale_y_continuous() + 
+  facet_wrap(vars(Resource), nrow = 2, ncol = 2, scales = "free_y") + 
+  theme(strip.text.x = element_text(size = 12, color='white',angle=0),
+        legend.position = "bottom", legend.title = element_blank(),
+        strip.background = element_rect(fill = "#525252", color='#525252')) + 
+  scale_colour_manual(values = c("red","blue"))
+rm(Import)
+```
+
+### 控制变量——政治、外交、经贸、人口
+
+大量既往研究已将各类控制变量纳入考量。本文将各控制变量分为四方面：政治、外交、经贸、人口。
+
+就政治方面而言，部分研究考虑了受援国的民主度与国内政治腐败程度。比如，当受援国国内政治腐败程度较高时，援助国可能会对援助成效感到担忧，从而减少对该国的援助[@guillon2020can]。本文采用PolityIV数据库提供的`polity2`指标来衡量受援国的民主程度，同时计算中美两国与受援国`polity2`值差值的绝对值，来衡量受援国与中美两国政体民主程度的相近程度（`polity2_CN`与`polity2_US`）[@marshall2016polity]。同时，本文采用世界银行旗下Worldwide Governance Indicators项目提供的`Control of Corruption`指标来衡量受援国对腐败的控制程度。该指标取值范围为-2.5至2.5，数值越高代表治理水平越高[@kaufmann2009governance]。
+
+就外交方面而言，大量研究考虑了受援国与援助国在联合国大会（United Nations General Assembly，UNGA）上的投票相似度。当投票相似度越高时，说明受援国可能在国际社会中更支持援助国，因而可能换取到援助国更多的援助[@Pang2017; @dreher2015rogue; @fuchs2013needy; @guillon2020can; @dreher2018apples]。本文采用Michael A. Bailey等人建立的`Ideal Point`指标来表征投票相似度。该值越大，意味着两国之间的投票相似度越小[@bailey2017estimating]。同时，有些文献指出，当受援国成为联合国安理会（United Nations Security Council）非常任理事国时，意味着其国际地位有所提升，援助国可能会减少对其的援助[@dreher2018apples]。出于方便起见，本文选用了Dreher等人论文中的复制数据作为表征受援国是否是联合国安理会非常任理事国成员（`UNSC`）的数据来源。该指标是一个二分类变量，0代表不是，而1代表是[@dreher2018apples]。
+
+就经贸方面而言，大量研究考虑了受援国人均GDP与贸易往来的影响。比如，当受援国人均GDP较低时，该国的平均经济实力也较低，因而该国更需要援助，亦可能收获更多援助[@Pang2017; @dreher2015rogue; @fuchs2013needy; @guillon2020can; @dreher2018apples]。本文既考虑受援国人均GDP的绝对值（`GDP`），也考虑其相对援助国人均GDP的相对值（`GDP_CN`与`GDP_US`）。本文同时考虑援助国与受援国双边贸易总量相对于受援国GDP总量的比值（`trade_CN`与`trade_US`），以此体现援助国相对于受援国的整体贸易依存度。另外，部分文献考虑了受援国负债程度——当受援国负债程度较高时，其建设能力与偿还能力可能较弱，因而援助国可能倾向于减少援助[@dreher2018apples; @guillon2020can]。本文选用受援国负债相对其GNI的比值来表征其负债程度（`debt`）。本方面的数据均来自于世界银行。
+
+同时，我们还要将受援国人口（`popu`）作为控制变量。受援国人口越多，意味着发展所需要满足的需求越大，因而所获得的援助就可能越多。本文所用的非洲各国人口数据来自于世界银行。
+
+以上各控制变量的描述性统计表格见下。
+
+```{r description, echo=FALSE, results='asis', message=FALSE, warning=FALSE}
+# 首先得从现有的panel里面建出一个只含有控制变量的dataframe
+control <- panel %>% 
+  select(polity2, rel_val_CN, rel_val_US, corruption,
+         CN_UNGA, US_UNGA, UNSC,
+         GDP, CN_rel_GDP, US_rel_GDP, TRADE_US, TRADE_CN, debt
+         ,popu
+         ) %>% 
+  rename("polity2_CN" = "rel_val_CN", "polity2_US" = "rel_val_US",
+         "corruption Control" = "corruption", "UNSC_membership" = "UNSC",
+         "UNGA_CN" = "CN_UNGA", "UNGA_US" = "US_UNGA",
+         "GDP_CN" = "CN_rel_GDP", "GDP_US" = "US_rel_GDP",
+         "trade_US" = "TRADE_US", "trade_CN" = "TRADE_CN") %>% 
+  as.data.frame(.)
+
+control$UNSC_membership <- as.numeric(control$UNSC_membership)
+control$popu <- as.numeric(control$popu)
+
+library(stargazer)
+stargazer(control, type = 'latex', digit.separator = "",
+          summary.stat = c("n", "mean", "max", "min", "sd"), 
+          header = FALSE, title = "控制变量描述性统计结果")
+rm(control)
+```
+
+
+
+
+
+## 模型方法
+
+这一部介绍使用何种统计方法检验假设。
+
+# 第4章：统计结果与讨论
+
+这一部分报告统计分析的结果，并结合假设讨论研究的发现
+
+
+
+# 第5章：结论
+这一部分总结全文，阐述研究的启事和意义
+
+
+
+# 参考文献
+\setlength{\parindent}{-0.2in}
+\setlength{\leftskip}{0.2in}
+\setlength{\parskip}{8pt}
+\vspace*{-0.2in}
+\noindent
+
+

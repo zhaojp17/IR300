@@ -1,0 +1,154 @@
+---
+title: "非洲受援国自然资源贸易量<br>对中美ODA分配的影响探析"
+subtitle: "Team-H"
+author: "陈道想 黄卓尔 潘明花 杨霖 赵佳鹏"
+date: "2020年12月29日"
+output:
+  xaringan::moon_reader:
+    css: "cc_slides.css"
+    nature:
+      ratio: "16:9"
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      
+---
+
+```{r setup, include=FALSE}
+# R options
+options(
+  htmltools.dir.version = FALSE, # for blogdown
+  show.signif.stars = FALSE,     # for regression output
+  warm = 1
+  )
+# Set dpi and height for images
+library(knitr)
+opts_chunk$set(fig.height = 2.65, dpi = 300) 
+# ggplot2 color palette with gray
+color_palette <- list(gray = "#999999", 
+                      salmon = "#E69F00", 
+                      lightblue = "#56B4E9", 
+                      green = "#009E73", 
+                      yellow = "#F0E442", 
+                      darkblue = "#0072B2", 
+                      red = "#D55E00", 
+                      purple = "#CC79A7")
+```
+
+
+## 提纲
+
+- 研究问题
+
+- 改进尝试
+
+- 假设
+
+- 数据来源、处理与模型
+
+- 结果分析
+
+- 意义与不足
+
+
+---
+
+## 研究问题
+
+**对外援助与自然资源之间的关系**
+
+“新殖民主义”与“rogue aid”——针对中国的批判
+
+* 长久以来，援助国对于受援国自然资源的需要一般被认为是国际援助的经济动机之一。
+* Naím：中国开展援助只是为了金钱、国际政治地位、**资源获取**，并不真正关心当地百姓。
+* Dreher：这么说不公平！虽然中国OOF受其一定程度的影响，但数据证明其对中国ODA援助的**影响微乎其微**。
+* ODA需要有25%以上属于赠与性质，而OOF则更关注商业利益。
+  
+对其它国家呢？
+
+* 国际上对于中国对外援助的争议颇丰。
+  
+* 但对于西方国家却少有类似的批判。
+  
+* **中国和其它国家相比，谁更注重自然资源？还是都不注重自然资源？**
+
+---
+
+## 研究问题
+
+```{r pic_ODA, eval=TRUE, echo=FALSE, fig.cap="中美两国ODA分配地理分布图"}
+library(knitr)
+include_graphics("ODA.png")
+```
+
+---
+
+## 改进尝试与假设提出
+
+同一套标准的横向比较
+* 尝试以评价中国的框架，去同时评价其它（西方）国家。
+* 受限于时间，我们只选取了中国和美国两个国家进行比较。
+
+对量化方式进行改进
+* 资源总量 vs 出口贸易量；单种资源 vs 多种资源；贸易绝对值 vs 贸易相对值
+    $$\text{相对量}=\frac{\text{受援国向援助国出口自然资源的绝对量}}{\text{援助国从世界进口该类资源的总量}}$$
+
+待验证的假设
+* $H_1$（相对值假设）：如果援助国对受援国自然资源的依赖度上升，则会倾向于向该受援国提供更多援助。
+* $H_2$（绝对值假设）：在特定置信水平下，受援国向援助国出口的自然资源绝对量与其得到的ODA援助量之间没有明显关系。
+
+---
+
+## 数据来源与初步处理
+
+```{r pic_example, eval=TRUE, echo=FALSE, fig.cap="变量与数据来源总表"}
+library(knitr)
+include_graphics("Table.png")
+```
+
+    
+---
+
+## 模型
+
+双维固定效应模型
+* 同时考虑时间效应和个体效应
+
+$$
+\begin{aligned}
+ODA_{it} = \ &\beta_{0} + \beta_{1}*\text{Resource Import}_{it-1} + \beta_{2}*\text{Resource Dependence}_{it-1} + \\&\beta_{3}*control_{it-1} + \alpha_{i} + \epsilon_{it}
+\end{aligned}
+$$
+滞后一期
+* 避免同时性偏差，自变量全部滞后一期
+
+数据标准化
+* 对援助额、进口额、依赖度、人均GDP、人口、贸易依赖度这些数字过大或过小的变量取对数，以减小数据的波动程度
+
+
+---
+
+## 结果
+
+```{r regression result, eval=TRUE, echo=FALSE, fig.cap="模型回归结果"}
+
+library(knitr)
+include_graphics("regression-US.png", dpi = 150)
+
+```
+
+---
+
+## 讨论
+
+**自然资源进口量不能很好支持研究的假设**
+* 回归系数基本不显著，且值很小
+* 但仍然，回归结果中系数均为正，表示自然资源进口量的多少可能会对援助量的多少存在影响，且并不单是中国一家觊觎受援国资源，自然资源可能是不少援助国均纳入考量的因素
+* 鉴于ODA的商业气息较淡，在被解释变量中将OOF纳入考虑可能有更好的结果，为此需要更高质量的中国援助数据
+
+**再次证实了政治因素在ODA援助量上的影响作用**
+* 对于美国而言，政体的民主度、腐败控制程度等可能是重要的考虑因素
+* 对于中国而言，联合国大会上对于中国立场的支持和中国给予的国际援助额之间存在密切的关系
+
+**模型的拓展应用？**
+
