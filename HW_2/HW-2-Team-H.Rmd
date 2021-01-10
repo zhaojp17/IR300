@@ -1,0 +1,247 @@
+---
+title: "《国际关系定量分析基础》2020秋季"
+subtitle: "第二次小组作业(共计100分)"
+date: "截止时间：**2020年11月2日 11：59 am**"
+author:
+  - 陈道想
+  - 黄卓尔
+  - 潘明花
+  - 杨霖
+  - 赵佳鹏
+documentclass: ctexart
+header-includes:
+  - \usepackage{float}
+output:
+  #bookdown::html_document2:
+  bookdown::pdf_document2:
+    toc: false
+    number_sections: no
+    latex_engine: xelatex
+fontsize: 11pt
+geometry: margin=1in
+---
+
+
+```{r setup, include=FALSE}
+library(knitr)
+library(formatR)
+library(dplyr)
+library(ggplot2)
+library(scales)
+library(ggthemes)
+opts_chunk$set(tidy=FALSE, message = FALSE, warning = FALSE,fig.pos = "H", out.extra = "",
+               fig.align='center', tidy.opts=list(arrow=TRUE, indent=2)) 
+```
+
+面板数据（panel data）也称为横截面时间序列数据（cross-sectional time-series data)，是国际关系中最常用的一种数据格式。本次作业的目标是练习如何利用既有数据库建立一个整洁的包含世界所有国家1990-2016年的面板数据，并添加国家特征相关的其他数据和变量。既有数据包括世界银行（world bank）、Pen World Table以及terrorism数据库等。
+
+**注意事项：**
+
+* 小组作业截止时间：**2020年11月2日 11：59 am**
+* 请将文件解压缩后，直接在R Markdown文件中完成本次作业
+* 作业在网络学堂提交，每个小组仅需提交一份
+* 提交作业的文件名需以`HW-2-Team-X.Rmd`，`HW-2-Team-X.pdf`或者`HW-2-Team-X.html`,请将`X`替换为小组编号，如`HW-2-Team-A.Rmd`、`HW-2-Team-A.pdf`或`HW-2-Team-A.html`。(若R Markdown出现无法`knit`为`pdf`情况，则使用`bookdown::html_document2:`会生成为`html`)
+* 请显示每道题的R Code于pdf中，注重Code的整洁性和可读性，可参考[Google's R Style Guide](https://google.github.io/styleguide/Rguide.html)
+* 本次作业所需R Packages已经提供。本次作业需要的数据已经提供，请将数据与`HW-2-Team-X.Rmd`放在同一工作路径的文件夹内，通过`load("globalterrorism.RData")`加载。
+
+```{r data, eval=FALSE}
+load("globalterrorism.RData")
+load("wdi.RData")
+```
+
+# 创建基本数据框（共20分）
+
+1.(**20分**) 请用R中的 `states`、`countrycode`和`dplyr` 三个packages, 创建一个1990-2016年包括全世界所有国家的，以年为单位的面板数据，并将数据框命名为`base_df`。**注意**：创建数据应使用基于COW 的国家代码(country code)，数据应该删除台湾省（台湾的COW code是713），最终的数据只保留`cowcode`, `country_name`和`year`三个变量（参考表-1的输出结果）。结合`base_df`数据，请回答这个数据的“分析单元”（unit-of-analysis）是什么？
+
+```{r q1, eval=TRUE}
+# 载入所需的包
+library(states)
+library(countrycode)
+library(dplyr)
+base_df <- state_panel("1990-01-01", "2016-12-31", by = "year",
+                       partial = "any", useGW = FALSE) %>% 
+# 删除台湾省信息
+           filter(., cowcode != 713) %>% 
+# 基于cowcode变量产生country_name变量
+           mutate(country_name = 
+                  countrycode(sourcevar = .$cowcode,
+                              "cown", "country.name"),
+# 将date变量修饰为year变量
+                  year = as.numeric(format(as.Date(date),"%Y")))  %>%
+# 当country_name为NA值时，去除之
+           filter(!is.na(country_name)) %>%
+# 调整数据框，除去原始数据日期列
+           select(cowcode, country_name, year)
+# 使用knitr:kable产生一个新的表格
+kable(head(base_df), caption = "基本数据框")
+```
+
+
+我们观察发现，`base_df`数据的“分析单元”是country-year，即国家·年。具体而言，即1990年至2016年间某一年某一国家。
+
+
+# 处理WDI数据（共20分）
+
+世界银行发展指标（world bank development indicators）是社会科学研究中常用的关于国家层次的政治经济和社会数据。其中，R中的`WDI`是一个基于世界银行数据的软件包，记录了世界银行及其开发指标的相关数据。利用`WDI`软件可包获取1990-2016年所有国家的包括“军费开支占GDP比重”、“GDP经济增长率”、“FDI占GDP比重的数据”，其对应的变量分布为`MS.MIL.XPND.GD.ZS`, `NY.GDP.MKTP.KD.ZG`, ` BX.KLT.DINV.WD.GD.ZS`。通过如下代码或者`load("wdi.RData")`可以获得这一数据。
+
+
+```{r q0, eval=FALSE}
+# Foreign direct investment, net inflows (% of GDP): BX.KLT.DINV.WD.GD.ZS
+# Military expenditure (% of GDP): MS.MIL.XPND.GD.ZS
+# GDP growth (annual %): NY.GDP.MKTP.KD.ZG
+library(WDI)
+wdi <- WDI(country = "all", indicator = c("MS.MIL.XPND.GD.ZS",
+                                          "NY.GDP.MKTP.KD.ZG",
+                                          "BX.KLT.DINV.WD.GD.ZS"), 
+           start = 1990, end = 2016)
+```
+
+
+2.(**10分**) 请利用`dplyr` 软件包，将数据`wdi`中以上三个变量重命名为`mil_expen` (MS.MIL.XPND.GD.ZS), `gdp_growth` (NY.GDP.MKTP.KD.ZG), `fdi_percent` (BX.KLT.DINV.WD.GD.ZS)。同时，利用R中的`countrycode`包，创建一个名为`ccode`变量——该变量应当使用COW的国家编码。最后，基于`wdi`数据，只保留如下变量：`country`, `ccode`, `year`, `mil_expen`, `gdp_growth`, `fdi_percent` （参考表-2的输出结果）。
+
+```{r q2, eval=TRUE}
+load("wdi.RData")
+wdi <- wdi %>% 
+# 进行变量重命名
+      rename(mil_expen = MS.MIL.XPND.GD.ZS,
+             gdp_growth = NY.GDP.MKTP.KD.ZG,
+             fdi_percent = BX.KLT.DINV.WD.GD.ZS) %>% 
+# 基于country变量产生ccode变量
+      mutate(ccode = countrycode(sourcevar = .$country,
+                                 "country.name", "cown")) %>%
+# 当ccode为NA值（如，country为地区）时，去除之
+      filter(!is.na(ccode)) %>%
+      select(country, ccode, year, mil_expen, gdp_growth, fdi_percent)
+# 使用knitr:kable产生一个新的表格
+kable(head(wdi), caption = "WDI数据框")      
+```
+
+
+注：如果基于`iso2c`变量产生`ccode`变量，在第7题统计`mil_expen`，`gdp_growth`，`fdi_percent`的`NA`值个数时将会比示例文件多9个。部分代码如下：
+```{r q2_0, eval=FALSE}
+mutate(ccode = countrycode(sourcevar = .$iso2c,
+                           "iso2c", "cown")) %>%
+```
+这是因为科索沃地区（Kosovo）的`iso2c`值`XK`无法被转化为`cown`值，因而被赋为`NA`，并在下一行代码被`filter`命令去除。
+
+
+3.(**10分**) 基于`wdi`数据，利用`dplyr`包，以表格形式显示2015年全世界军费开支占GDP比重最高的10个国家（参考表-3的输出结果）。**提示**：可利用`dplyr`包中`filter`, `slice_max`、`arrange`三个命令。
+
+
+```{r q3, eval=TRUE}
+wdi %>% 
+# 筛选2015年数据
+    dplyr::filter(year == 2015) %>% 
+# 选取mil_expen最高的10个国家
+    slice_max(order_by = mil_expen, n=10) %>%
+# 仿照样例进行降序排列
+    arrange(desc(mil_expen)) -> max
+# 使用knitr:kable产生一个新的表格
+kable(max, caption = "2015年全世界军费开支占GDP比重最高的10个国家")
+```
+
+# 处理Penn Word Table 9.1数据（共20分）
+
+4.(**10分**) Penn Word Table是经济学家常用的关于世界各国经济指标的数据，R中的`pwt9`软件包已经收录了1950-2017年各国的相关数据。利用`pwt9`包，获取1990-2016年之间各国的数据，将数据框命名为`pwt9`；同时利用COW的国家编码，创建一个`ccode`变量。**提示**：数据应该是4450行，48列。
+
+
+```{r q4, eval=TRUE}
+library(pwt9)
+data("pwt9.0")
+pwt9 <- pwt9.0 %>% 
+      filter(year >= 1990 & year <= 2016) %>% 
+# 基于isocode变量产生ccode变量
+      mutate(ccode = countrycode(sourcevar = .$isocode, "iso3c", "cown"))
+dim(pwt9)
+# 使用下列命令可以实现类似于第1、2题的数据清洗效果
+# 本命令将在下题中使用：filter(!is.na(ccode))
+```
+
+
+注：采用`pwt9.0`时，数据应该是4550行，48列；若采用`pwt9.1`，数据应该是4914行，53列。
+
+
+5.(**10分**) 基于创建的1990-2016年的`pwt9`数据框，只保留各国1990-2016年间的GDP变量（对应的变量名为`rgdpna`）、人口(对应的变量名为`pop`)。**提示**：最后保留的`ccode`, `year`, `pop`, `rgdpna`变量和观察量如表-4所示.
+
+
+```{r q5, eval=TRUE}
+pwt9 <- pwt9 %>% 
+# 参见上题注释
+        filter(!is.na(ccode)) %>% 
+        select(ccode, year, pop, rgdpna) 
+dim(pwt9)
+# 使用knitr:kable产生一个新的表格
+kable(head(pwt9), caption = "PWT9数据")
+```
+
+
+# 处理Terrorism数据（共20分）
+
+6.(**10分**)  `globalterrorism.RData`记录了1990-2016年发生在世界各国的恐怖袭击事件。首先，描述这一数据的分析单位（unit-of-analysis）是什么？其次，根据`globalterrorism.RData`这一数据，利用`dplyr`包，将数据汇总到`国家--年`层次，以显示各国在每一年发生的恐怖袭击的次数和每年的伤亡人数总和。**提示**：需要使用`group_by`, `summarise`等命令。
+
+```{r q6, eval=TRUE}
+load("globalterrorism.RData")
+gtd <- globalterrorism %>% 
+# 基于国家名称产生ccode变量
+       mutate(ccode = countrycode(sourcevar = .$country_txt,
+                                  "country.name", "cown")) %>%
+       filter(!is.na(ccode)) %>% 
+# 将数据汇总到国家·年层次
+       group_by(ccode, iyear) %>% 
+# 统计各国各年发生的恐怖袭击的次数和每年的伤亡人数总和
+       summarise(sum_nkillter = sum(nkillter, na.rm = TRUE), 
+                 sum_events = n()) %>% 
+       select(iyear, ccode, sum_nkillter, sum_events) %>% 
+# 仿照样例进行升序排列
+       arrange(iyear, ccode)
+dim(gtd)
+# 使用knitr:kable产生一个新的表格
+kable(head(gtd), caption = "GTD数据")
+```
+
+
+我们观察发现，`globalterrorism.RData`数据的“分析单元”是event，即一次事件。而我们处理之后产生的数据汇总到了国家·年层次，因而其“分析单元”是国家·年。具体而言，即1990年至2016年间某一年某一国家。
+
+
+# 合并三个数据（共10分）
+
+7.(**10分**) 分别将`wdi`, `pwt9`以及`gtd`合并到`base_df`中，产生一个包含11个变量，5094个观测量的数据。注意需要将`sum_nkillter`与`sum_events`中的`NA`重新赋值为0.**提示**：使用`left_join`这一命令（参考如下最终结果）。
+
+
+```{r q7, eval=TRUE}
+base_df <- left_join(base_df, wdi, by = c("cowcode" = "ccode",
+                                          "year" = "year")) %>% 
+           left_join(., pwt9, by = c("cowcode" = "ccode",
+                                     "year" = "year")) %>% 
+           left_join(., gtd, by = c("cowcode" = "ccode",
+                                    "year" = "iyear")) %>% 
+# 将指定变量中的NA重新赋值为0
+           mutate(sum_nkillter = ifelse(is.na(sum_nkillter),
+                                        0, sum_nkillter)) %>% 
+           mutate(sum_events = ifelse(is.na(sum_events), 0, sum_events))
+summary(base_df)
+```
+
+# 可视化数据（10分）
+8.(**5分**)利用`stargazer`包，基于合并的`base_df`数据，制作变量间的描述统计表，产生关于如下变量的描述性统计表格（见表-6所示）。**提示**: 可以通过`help(stargazer)`选择对应的统计量(`summary.stat`)。
+
+```{r q8, results='asis', eval=TRUE}
+library(stargazer)
+#使用stargazer命令产生描述性表格
+stargazer(base_df, summary.stat = c("n", "mean", "median", "max", "min", "sd"),
+          header=FALSE, type='latex', 
+          title = "变量的描述性统计", digit.separator = "")
+```
+
+9.(**5分**)利用`GGally`包，基于合并的`base_df`数据，绘制包括如下变量的（图-1）相关系数图。
+
+
+```{r q9, eval=TRUE, fig.cap='变量的相关关系', fig.height=8}
+library(GGally)
+ggpairs(base_df[, c("mil_expen", "gdp_growth", "fdi_percent", "pop",
+                    "rgdpna", "sum_nkillter", "sum_events")],
+# 去除坐标轴标注以使图形更为简洁
+        axisLabels = "none")
+```
+
+
